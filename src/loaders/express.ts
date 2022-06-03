@@ -1,8 +1,75 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, response, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import config from "@/config";
 import routes from "@/api";
+import dotenv from "dotenv";
+dotenv.config();
+
+const NODE_ENV = process.env.NODE_ENV || "development";
+
+const errorHandlerMiddleWare = (err: any, req: Request, res: Response, next: NextFunction) => {
+  const errorMessage = getErrorMessage(err);
+  logErrorMessage(errorMessage);
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  const errorResponse = {
+    statusCode: getHttpStatusCode({ err, res }),
+    body: undefined
+  }
+
+  if (NODE_ENV !== "production") {
+    errorResponse.body = errorMessage;
+  }
+
+  res.status(errorResponse.statusCode);
+  res.format({
+    "application/json": () => {
+      res.json({ message: errorResponse.body});
+    },
+    default: () => {
+      res.type("text/plain").send(errorResponse.body);
+    }
+  });
+  next();
+}
+
+function getErrorMessage(err: any) {
+  if (err.stack) {
+    return err.stack;
+  }
+
+  if (typeof err.toString() === "function") {
+    return err.toString();
+  }
+
+  return "";
+}
+
+function logErrorMessage(err: any) {
+  console.error(err);
+}
+
+function isErrorStatusCode(statusCode: number) {
+  return statusCode >=400 && statusCode < 600;
+}
+
+function getHttpStatusCode({ err, res }) {
+  const statusCodeFromError = err.status || err.statusCode;
+  if (isErrorStatusCode(statusCodeFromError)) {
+    return statusCodeFromError;
+  }
+
+  const statusCodeFromResponse = res.statusCode;
+  if (isErrorStatusCode(statusCodeFromResponse)) {
+    return statusCodeFromResponse;
+  }
+  
+  return 500;
+}
 
 export default async ({ app }: { app: express.Application }) => {
   app.get("/status", (req: Request, res: Response) => {
@@ -23,24 +90,5 @@ export default async ({ app }: { app: express.Application }) => {
 
   app.use(config.api.prefix, routes());
 
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    const err = new Error("Not Found");
-    err["status"] = 404;
-    next(err);
-  });
-
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    if (err.name == "UnauthorizedError") {
-      return res.status(err.status).send({ message: err.message }).end();
-    }
-  });
-
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-      },
-    });
-  });
-};
+  app.use(errorHandlerMiddleWare);
+}

@@ -15,12 +15,10 @@ export default (app: Router) => {
     middlewares.isAuth,
     async (req: Request, res: Response, next: NextFunction) => {
       const logger: Logger = Container.get("logger");
-      logger.debug("Calling me endpoint");
       try {
         return res.json({ user: req.currentUser }).status(200);
       } catch (err) {
-        logger.error("🔥 error: %o", err);
-        return next(err);
+        next(err);
       }
     }
   );
@@ -29,8 +27,6 @@ export default (app: Router) => {
     "/me",
     middlewares.isAuth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
-      logger.debug("Calling me endpoint with body %o", req.body);
       try {
         const userServiceInstance = Container.get(UserService);
         const userRecord = await userServiceInstance.updateUser(
@@ -39,8 +35,7 @@ export default (app: Router) => {
         );
         res.status(201).json({ userRecord });
       } catch (err) {
-        logger.error("🔥 error: %o", err);
-        return next(err);
+        next(err);
       }
     }
   );

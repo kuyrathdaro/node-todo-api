@@ -4,7 +4,6 @@ import { Container } from "typedi";
 import middlewares from "@/api/middlewares";
 import TodoService from "@/services/todo";
 import { ITodoInputDTO } from "@/interfaces/ITodo";
-import { Logger } from "winston";
 
 const route = Router();
 
@@ -21,7 +20,6 @@ export default (app: Router) => {
       },
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
       try {
         const todoServiceInstance = Container.get(TodoService);
         if (req.params.id) {
@@ -37,8 +35,7 @@ export default (app: Router) => {
           return res.json(todos).status(200);
         }
       } catch (err) {
-        logger.error(err);
-        return next(err);
+        next(err);
       }
     }
   );
@@ -55,8 +52,6 @@ export default (app: Router) => {
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
-      logger.debug("Calling create todo endpoint with body: %o", req.body);
       try {
         const todoServiceInstance = Container.get(TodoService);
         const result = await todoServiceInstance.createTodo(
@@ -65,8 +60,7 @@ export default (app: Router) => {
         );
         return res.json(result).status(200).end();
       } catch (err) {
-        logger.error(err);
-        return next(err);
+        next(err);
       }
     }
   );
@@ -86,8 +80,6 @@ export default (app: Router) => {
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
-      logger.debug("Calling update todo endpoint with body: %o", req.body);
       try {
         const todoServiceInstance = Container.get(TodoService);
         const result = await todoServiceInstance.updateTodo(
@@ -97,8 +89,7 @@ export default (app: Router) => {
         );
         return res.json(result).status(200).end();
       } catch (err) {
-        logger.error(err);
-        return next(err);
+        next(err);
       }
     }
   );
@@ -113,8 +104,6 @@ export default (app: Router) => {
       },
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
-      logger.debug("Calling delete todo endpoint with id: %o", req.params.id);
       try {
         const todoServiceInstance = Container.get(TodoService);
         const result = await todoServiceInstance.deleteTodo(
@@ -123,8 +112,7 @@ export default (app: Router) => {
         );
         return res.json(result).status(200).end();
       } catch (err) {
-        logger.error(err);
-        return next(err);
+        next(err);
       }
     }
   );

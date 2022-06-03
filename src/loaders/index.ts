@@ -9,12 +9,12 @@ export default async ({ expressApp }) => {
   Logger.info("✌️ DB loaded and connected!");
 
   const userModel = {
-    name: "UserModel",
+    name: "userModel",
     model: require("@/models/user").default,
   };
 
   const todoModel = {
-    name: "TodoModel",
+    name: "todoModel",
     model: require("@/models/todo").default,
   };
 

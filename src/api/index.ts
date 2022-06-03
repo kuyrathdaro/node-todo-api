@@ -8,11 +8,11 @@ import docs from "./routes/docs";
 export default () => {
   const app = Router();
 
+  docs(app);
+  agendash(app);
   auth(app);
   user(app);
   todo(app);
-  agendash(app);
-  docs(app);
 
   return app;
 };

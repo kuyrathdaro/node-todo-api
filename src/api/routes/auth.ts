@@ -4,7 +4,6 @@ import AuthService from "@/services/auth";
 import { IUserInputDTO } from "@/interfaces/IUser";
 import middlewares from "@/api/middlewares";
 import { celebrate, Joi } from "celebrate";
-import { Logger } from "winston";
 
 const route = Router();
 
@@ -21,8 +20,6 @@ export default (app: Router) => {
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
-      logger.debug("Calling signup endpoint with body: %o", req.body);
       try {
         const authServiceInstance = Container.get(AuthService);
         const { user, token } = await authServiceInstance.signUp(
@@ -30,7 +27,6 @@ export default (app: Router) => {
         );
         return res.status(201).json({ user, token });
       } catch (err) {
-        logger.error(err);
         return next(err);
       }
     }
@@ -45,8 +41,6 @@ export default (app: Router) => {
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
-      logger.debug("Calling signin endpoint with body: %o", req.body);
       try {
         const { email, password } = req.body;
         const authServiceInstance = Container.get(AuthService);
@@ -56,8 +50,7 @@ export default (app: Router) => {
         );
         return res.json({ user, token }).status(200);
       } catch (err) {
-        logger.error("🔥 error: %o", err);
-        return next(err);
+        next(err);
       }
     }
   );
@@ -66,14 +59,11 @@ export default (app: Router) => {
     "/signout",
     middlewares.isAuth,
     (req: Request, res: Response, next: NextFunction) => {
-      const logger: Logger = Container.get("logger");
-      logger.debug("Calling signout endpoint with body: %o", req.body);
       try {
         //TODO: authServiceInstance.signOut(req.user) do some clever stuff
         return res.status(200).end();
       } catch (err) {
-        logger.error("🔥 error %o", err);
-        return next(err);
+        next(err);
       }
     }
   );
