@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - 3000:3000
+    links:
+      - mongo
+    volumes:
+      - .:/usr/src/app
+    depends_on: 
+      - mongo
+    networks:
+      - node-todo
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:
+      MONGO_INITDB_ROOT_PASSWORD:
+      MONGO_INITDB_DATABASE: node-todo
+    networks:
+      - node-todo
+
+volumes:
+  mongodata:
+networks:
+  node-todo:
