@@ -4,14 +4,14 @@ services:
     build: .
     ports:
       - 3000:3000
-    links:
-      - mongo
     volumes:
-      - .:/usr/src/app
+      - /usr/app/node_modules
+    env_file:
+      - .env
     depends_on: 
       - mongo
     networks:
-      - node-todo
+      - nodetodo-net
   mongo:
     container_name: mongo
     image: mongo
@@ -24,9 +24,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD:
       MONGO_INITDB_DATABASE: node-todo
     networks:
-      - node-todo
+      - nodetodo-net
 
 volumes:
   mongodata:
+    driver: local
 networks:
-  node-todo:
+  nodetodo-net:
