@@ -5,7 +5,7 @@ import { Logger } from "winston";
 import { Request, NextFunction, Response } from "express";
 
 const attachCurrentUser = async (
-  req: Request,
+  req: Request & { token?: { _id: string }; currentUser?: IUser },
   res: Response,
   next: NextFunction
 ) => {

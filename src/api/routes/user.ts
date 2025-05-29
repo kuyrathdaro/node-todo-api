@@ -3,7 +3,7 @@ import middlewares from "@/api/middlewares";
 import { Container } from "typedi";
 import { Logger } from "winston";
 import UserService from "@/services/user";
-import { IUserInputDTO } from "@/interfaces/IUser";
+import { IUserInputDTO, IUser } from "@/interfaces/IUser";
 
 const route = Router();
 
@@ -13,7 +13,7 @@ export default (app: Router) => {
   route.get(
     "/me",
     middlewares.isAuth,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       const logger: Logger = Container.get("logger");
       try {
         res.status(200).json({ user: req.currentUser });
@@ -26,7 +26,7 @@ export default (app: Router) => {
   route.patch(
     "/me",
     middlewares.isAuth,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         const userServiceInstance = Container.get(UserService);
         const userRecord = await userServiceInstance.updateUser(

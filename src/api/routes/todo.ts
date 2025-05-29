@@ -4,6 +4,7 @@ import { Container } from "typedi";
 import middlewares from "@/api/middlewares";
 import TodoService from "@/services/todo";
 import { ITodoInputDTO } from "@/interfaces/ITodo";
+import { IUser } from "@/interfaces/IUser";
 
 const route = Router();
 
@@ -19,7 +20,7 @@ export default (app: Router) => {
         id: Joi.string(),
       },
     }),
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         const todoServiceInstance = Container.get(TodoService);
         if (req.params.id) {
@@ -51,7 +52,7 @@ export default (app: Router) => {
         status: Joi.bool(),
       }),
     }),
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         const todoServiceInstance = Container.get(TodoService);
         const result = await todoServiceInstance.createTodo(
@@ -79,7 +80,7 @@ export default (app: Router) => {
         status: Joi.bool(),
       }),
     }),
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         const todoServiceInstance = Container.get(TodoService);
         const result = await todoServiceInstance.updateTodo(
@@ -103,7 +104,7 @@ export default (app: Router) => {
         id: Joi.string().required(),
       },
     }),
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         const todoServiceInstance = Container.get(TodoService);
         const result = await todoServiceInstance.deleteTodo(

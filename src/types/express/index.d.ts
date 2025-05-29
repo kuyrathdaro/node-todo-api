@@ -1,12 +1,10 @@
-import { IUser } from "@/interfaces/IUser";
+import { IUser } from '@/interfaces/IUser';
 
 declare global {
   namespace Express {
     interface Request {
-      token?: { _id: string }; // Adjust type as needed
+      token?: { _id: string }; // Or your full JWT payload interface
       currentUser?: IUser;
     }
   }
 }
-
-export {};

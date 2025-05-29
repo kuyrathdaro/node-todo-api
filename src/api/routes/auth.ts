@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Container } from "typedi";
 import AuthService from "@/services/auth";
-import { IUserInputDTO } from "@/interfaces/IUser";
+import { IUserInputDTO, IUser } from "@/interfaces/IUser";
 import middlewares from "@/api/middlewares";
 import { celebrate, Joi } from "celebrate";
 
@@ -19,7 +19,7 @@ export default (app: Router) => {
         password: Joi.string().required(),
       }),
     }),
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         const authServiceInstance = Container.get(AuthService);
         const { user, token } = await authServiceInstance.signUp(
@@ -40,7 +40,7 @@ export default (app: Router) => {
         password: Joi.string().required(),
       }),
     }),
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         const { email, password } = req.body;
         const authServiceInstance = Container.get(AuthService);
@@ -58,7 +58,7 @@ export default (app: Router) => {
   route.post(
     "/signout",
     middlewares.isAuth,
-    (req: Request, res: Response, next: NextFunction) => {
+    (req: Request & { token?: { _id: string }; currentUser?: IUser }, res: Response, next: NextFunction) => {
       try {
         //TODO: authServiceInstance.signOut(req.user) do some clever stuff
         res.status(200).end();

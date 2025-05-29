@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, response, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import config from "@/config";
