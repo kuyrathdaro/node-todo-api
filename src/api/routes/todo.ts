@@ -12,7 +12,7 @@ export default (app: Router) => {
   app.use("/todos", route);
 
   route.get(
-    "/:id?",
+    "/:id",
     middlewares.isAuth,
     middlewares.attachCurrentUser,
     celebrate({
