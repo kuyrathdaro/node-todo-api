@@ -14,12 +14,6 @@ const errorHandlerMiddleWare = (err: any, req: Request, res: Response, next: Nex
   if (err.name === "ValidationError" || err.joi) {
     errorMessage = "Validation failed";
     err.status = 400;
-  } else if (err.message === "User already exists") {
-    errorMessage = "User already exists";
-    err.status = 409;
-  } else if (err.message === "Invalid credentials" || err.message === "Invalid Password") {
-    errorMessage = "Invalid credentials";
-    err.status = 401;
   } else {
     errorMessage = getErrorMessage(err);
   }

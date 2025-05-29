@@ -11,6 +11,7 @@ import {
 } from "@/decorators/eventDispatcher";
 import events from "@/subscribers/events";
 import { UserModel } from "@/models/user";
+import { AuthError } from "@/utils/auth.error";
 
 @Service()
 export default class AuthService {
@@ -25,6 +26,12 @@ export default class AuthService {
     userInputDTO: IUserInputDTO
   ): Promise<{ user: Partial<IUser>; token: string }> {
     try {
+
+      const existingUser = await this.userModel.findOne({ email: userInputDTO.email });
+      if (existingUser) {
+        throw new AuthError('User already exists', 409);
+      }
+
       const salt = bcryptjs.genSaltSync(10);
       this.logger.silly("Hashing password");
       const hashedPassword = bcryptjs.hashSync(userInputDTO.password, salt);
@@ -63,7 +70,7 @@ export default class AuthService {
   ): Promise<{ user: Partial<IUser>; token: string }> {
     const userRecord = await this.userModel.findOne({ email });
     if (!userRecord) {
-      throw new Error("User not registered");
+      throw new AuthError("User not registered", 401);
     }
 
     this.logger.silly("Checking password");
@@ -78,7 +85,7 @@ export default class AuthService {
 
       return { user, token };
     } else {
-      throw new Error("Invalid Password");
+      throw new AuthError("Invalid Password", 401);
     }
   }
 
