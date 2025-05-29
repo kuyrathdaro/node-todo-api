@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Model, Document } from "mongoose";
 import { ITodo } from "@/interfaces/ITodo";
 
 const Todo = new mongoose.Schema({
@@ -17,4 +17,5 @@ const Todo = new mongoose.Schema({
     }
 }, {timestamps: true});
 
+export type TodoModel = Model<ITodo & Document>;
 export default mongoose.model<ITodo & mongoose.Document>("Todo", Todo);

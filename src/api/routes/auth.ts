@@ -25,9 +25,9 @@ export default (app: Router) => {
         const { user, token } = await authServiceInstance.signUp(
           req.body as IUserInputDTO
         );
-        return res.status(201).json({ user, token });
+        res.status(201).json({ user, token });
       } catch (err) {
-        return next(err);
+        next(err);
       }
     }
   );
@@ -48,7 +48,7 @@ export default (app: Router) => {
           email,
           password
         );
-        return res.json({ user, token }).status(200);
+        res.status(200).json({ user, token });
       } catch (err) {
         next(err);
       }
@@ -61,7 +61,7 @@ export default (app: Router) => {
     (req: Request, res: Response, next: NextFunction) => {
       try {
         //TODO: authServiceInstance.signOut(req.user) do some clever stuff
-        return res.status(200).end();
+        res.status(200).end();
       } catch (err) {
         next(err);
       }

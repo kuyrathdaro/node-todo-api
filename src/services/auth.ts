@@ -10,11 +10,12 @@ import {
   EventDispatcherInterface,
 } from "@/decorators/eventDispatcher";
 import events from "@/subscribers/events";
+import { UserModel } from "@/models/user";
 
 @Service()
 export default class AuthService {
   constructor(
-    @Inject("userModel") private userModel: Models.UserModel,
+    @Inject("userModel") private userModel: UserModel,
     private mailer: MailerService,
     @Inject("logger") private logger: Logger,
     @EventDispatcher() private eventDispatcher: EventDispatcherInterface

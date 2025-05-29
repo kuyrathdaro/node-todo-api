@@ -27,12 +27,12 @@ export default (app: Router) => {
             req.currentUser._id,
             req.params.id
           );
-          return res.json({ todos }).status(200);
+          res.json({ todos }).status(200);
         } else {
           const todos = await todoServiceInstance.getAllTodos(
             req.currentUser._id
           );
-          return res.json(todos).status(200);
+          res.json(todos).status(200);
         }
       } catch (err) {
         next(err);
@@ -58,7 +58,7 @@ export default (app: Router) => {
           req.currentUser._id,
           req.body as ITodoInputDTO
         );
-        return res.json(result).status(200).end();
+        res.json(result).status(200).end();
       } catch (err) {
         next(err);
       }
@@ -87,7 +87,7 @@ export default (app: Router) => {
           req.params.id,
           req.body as ITodoInputDTO
         );
-        return res.json(result).status(200).end();
+        res.json(result).status(200).end();
       } catch (err) {
         next(err);
       }
@@ -110,7 +110,7 @@ export default (app: Router) => {
           req.currentUser._id,
           req.params.id
         );
-        return res.json(result).status(200).end();
+        res.json(result).status(200).end();
       } catch (err) {
         next(err);
       }

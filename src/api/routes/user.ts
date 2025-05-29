@@ -16,7 +16,7 @@ export default (app: Router) => {
     async (req: Request, res: Response, next: NextFunction) => {
       const logger: Logger = Container.get("logger");
       try {
-        return res.json({ user: req.currentUser }).status(200);
+        res.status(200).json({ user: req.currentUser });
       } catch (err) {
         next(err);
       }

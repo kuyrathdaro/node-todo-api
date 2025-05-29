@@ -1,12 +1,14 @@
 import { Service, Inject } from "typedi";
 import { ITodoInputDTO } from "@/interfaces/ITodo";
 import { Logger } from "winston";
+import { UserModel } from "@/models/user";
+import { TodoModel } from "@/models/todo";
 
 @Service()
 export default class TodoService {
   constructor(
-    @Inject("todoModel") private todoModel: Models.TodoModel,
-    @Inject("userModel") private userModel: Models.UserModel,
+    @Inject("todoModel") private todoModel: TodoModel,
+    @Inject("userModel") private userModel: UserModel,
     @Inject("logger") private logger: Logger
   ) {}
 
