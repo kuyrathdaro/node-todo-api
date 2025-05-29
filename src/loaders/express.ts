@@ -4,80 +4,71 @@ import helmet from "helmet";
 import config from "@/config";
 import routes from "@/api";
 import dotenv from "dotenv";
+import { errors as celebrateErrors } from "celebrate";
 dotenv.config();
 
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 const errorHandlerMiddleWare = (err: any, req: Request, res: Response, next: NextFunction) => {
-  const errorMessage = getErrorMessage(err);
+  let errorMessage: string;
+  if (err.name === "ValidationError" || err.joi) {
+    errorMessage = "Validation failed";
+    err.status = 400;
+  } else if (err.message === "User already exists") {
+    errorMessage = "User already exists";
+    err.status = 409;
+  } else if (err.message === "Invalid credentials" || err.message === "Invalid Password") {
+    errorMessage = "Invalid credentials";
+    err.status = 401;
+  } else {
+    errorMessage = getErrorMessage(err);
+  }
+
   logErrorMessage(errorMessage);
 
-  if (res.headersSent) {
-    return next(err);
-  }
+  if (res.headersSent) return next(err);
 
-  const errorResponse = {
-    statusCode: getHttpStatusCode({ err, res }),
-    body: undefined
-  }
-
-  if (NODE_ENV !== "production") {
-    errorResponse.body = errorMessage;
-  }
-
-  res.status(errorResponse.statusCode);
+  const statusCode = getHttpStatusCode({ err, res });
+  res.status(statusCode);
   res.format({
-    "application/json": () => {
-      res.json({ message: errorResponse.body});
-    },
-    default: () => {
-      res.type("text/plain").send(errorResponse.body);
-    }
+    "application/json": () => res.json({ message: errorMessage }),
+    default: () => res.type("text/plain").send(errorMessage)
   });
-  next();
-}
+};
 
 function getErrorMessage(err: any) {
-  if (err.stack) {
-    return err.stack;
-  }
-
-  if (typeof err.toString() === "function") {
-    return err.toString();
-  }
-
+  if (err.stack) return err.stack;
+  if (typeof err.toString === "function") return err.toString();
   return "";
 }
 
 function logErrorMessage(err: any) {
-  console.error(err);
+  const env = process.env.NODE_ENV;
+  if (env === "production") return;
+
+  const message = err instanceof Error ? err.message : String(err);
+  if (env === "test") {
+    console.error(`[Test Error] ${message}`);
+  } else {
+    console.error(err); // full stack in dev
+  }
 }
 
 function isErrorStatusCode(statusCode: number) {
-  return statusCode >=400 && statusCode < 600;
+  return statusCode >= 400 && statusCode < 600;
 }
 
 function getHttpStatusCode({ err, res }) {
-  const statusCodeFromError = err.status || err.statusCode;
-  if (isErrorStatusCode(statusCodeFromError)) {
-    return statusCodeFromError;
-  }
-
-  const statusCodeFromResponse = res.statusCode;
-  if (isErrorStatusCode(statusCodeFromResponse)) {
-    return statusCodeFromResponse;
-  }
-  
+  const codeFromErr = err.status || err.statusCode;
+  if (isErrorStatusCode(codeFromErr)) return codeFromErr;
+  const codeFromRes = res.statusCode;
+  if (isErrorStatusCode(codeFromRes)) return codeFromRes;
   return 500;
 }
 
 export default async ({ app }: { app: express.Application }) => {
-  app.get("/status", (req: Request, res: Response) => {
-    res.status(200).end();
-  });
-  app.head("/status", (req: Request, res: Response) => {
-    res.status(200).end();
-  });
+  app.get("/status", (req: Request, res: Response) => { res.status(200).end() });
+  app.head("/status", (req: Request, res: Response) => { res.status(200).end() });
 
   app.enable("trust proxy");
   app.disable("x-powered-by");
@@ -85,10 +76,10 @@ export default async ({ app }: { app: express.Application }) => {
   app.use(cors());
   app.use(helmet());
   app.use(require("method-override")());
-
   app.use(express.json());
 
   app.use(config.api.prefix, routes());
 
+  app.use(celebrateErrors()); // <-- MUST come before error handler
   app.use(errorHandlerMiddleWare);
-}
+};

@@ -3,9 +3,9 @@ import express from "express";
 import config from "./config";
 import logger from "./loaders/logger";
 
-async function startServer() {
-  const app = express();
+const app = express(); // Move app to global scope
 
+async function startServer() {
   await require("./loaders").default({ expressApp: app });
 
   app
@@ -19,3 +19,4 @@ async function startServer() {
 }
 
 startServer();
+export default app; // 👈 Export app here
