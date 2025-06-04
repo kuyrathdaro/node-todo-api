@@ -17,4 +17,6 @@ export default (app: Router) => {
     }),
     agendash(agendaInstance)
   );
+
+  return app;
 };

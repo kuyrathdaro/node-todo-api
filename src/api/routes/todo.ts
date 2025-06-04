@@ -117,4 +117,6 @@ export default (app: Router) => {
       }
     }
   );
+
+  return app;
 };

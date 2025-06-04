@@ -1,15 +1,18 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
-import app from "@/app";
+import createApp from "@/app";
+
+let app;
 
 describe('Auth API', () => {
   const userPayload = {
-    name: 'Test User',
-    email: 'test@example.com',
-    password: 'securePassword123',
+    name: "User Me",
+    email: "me@example.com",
+    password: "securePassword456",
   };
 
   beforeAll(async () => {
+    app = await createApp();
     // Connect to test DB if needed, otherwise app loader handles it
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
@@ -35,7 +38,7 @@ describe('Auth API', () => {
       .post('/api/auth/signup')
       .send(userPayload);
 
-    expect(res.statusCode).toBe(409); // assuming your service throws 409 for duplicates
+    expect(res.statusCode).toBe(409);
   });
 
   it('should sign in the user', async () => {

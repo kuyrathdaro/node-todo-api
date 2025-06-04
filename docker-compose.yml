@@ -34,3 +34,4 @@ volumes:
 
 networks:
   nodetodo-net:
+    driver: bridge

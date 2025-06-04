@@ -24,17 +24,18 @@ const errorHandlerMiddleWare = (err: any, req: Request, res: Response, next: Nex
 
   const statusCode = getHttpStatusCode({ err, res });
   res.status(statusCode);
-  res.format({
-    "application/json": () => res.json({ message: errorMessage }),
-    default: () => res.type("text/plain").send(errorMessage)
-  });
+  res.json({
+  error: err.name || "InternalServerError",
+  message: errorMessage,
+});
 };
 
-function getErrorMessage(err: any) {
-  if (err.stack) return err.stack;
-  if (typeof err.toString === "function") return err.toString();
-  return "";
+function getErrorMessage(err: any): string {
+  if (err.expose && err.message) return err.message; // for known safe messages
+  if (err.message) return err.message;
+  return "Unexpected error";
 }
+
 
 function logErrorMessage(err: any) {
   const env = process.env.NODE_ENV;
@@ -74,6 +75,6 @@ export default async ({ app }: { app: express.Application }) => {
 
   app.use(config.api.prefix, routes());
 
-  app.use(celebrateErrors()); // <-- MUST come before error handler
+  app.use(celebrateErrors());
   app.use(errorHandlerMiddleWare);
 };

@@ -22,8 +22,8 @@ const attachCurrentUser = async (
       return;
     }
     const currentUser = userRecord.toObject();
-    Reflect.deleteProperty(currentUser, "password");
-    Reflect.deleteProperty(currentUser, "salt");
+    delete currentUser.password; // Remove sensitive data
+    delete currentUser.salt; // Remove sensitive data
     req.currentUser = currentUser;
     next();
   } catch (err) {

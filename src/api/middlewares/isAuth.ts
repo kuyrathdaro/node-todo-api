@@ -16,7 +16,7 @@ const getTokenFromHeader = (req: Request) => {
 
 const isAuth = expressjwt({
   secret: config.jwtSecret,
-  algorithms: ["RS256"],
+  algorithms: ["HS256"],
   requestProperty: 'token',
   getToken: getTokenFromHeader
 });

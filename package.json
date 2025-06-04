@@ -7,8 +7,8 @@
     "clean": "rimraf dist",
     "build": "npm run clean && tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "npm run build && node ./dist/app.js",
-    "dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register src/app.ts",
-    "inspect": "nodemon --inspect --watch src --exec ts-node src/app.ts",
+    "dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "inspect": "nodemon --inspect --watch src --exec ts-node src/server.ts",
     "test": "jest --detectOpenHandles",
     "lint": "eslint ./src --ext .ts"
   },
