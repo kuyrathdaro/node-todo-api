@@ -75,15 +75,47 @@ const options: swaggerJSDoc.Options = {
             email: {
               type: "string",
               format: "email",
-              example: "jane.doe@example.com"
+              example: "jane.doe@example.com",
             },
             password: {
               type: "string",
               format: "password",
-              example: "securePassword123"
-            }
-          }
-        }
+              example: "securePassword123",
+            },
+          },
+        },
+        Todo: {
+          type: "object",
+          properties: {
+            _id: {
+              type: "string",
+              example: "60d0fe4f5311236168a109cb",
+            },
+            title: {
+              type: "string",
+              example: "Sample Todo",
+            },
+            description: {
+              type: "string",
+              example: "This is a sample todo item.",
+            },
+            status: {
+              type: "boolean",
+              example: false,
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+              example: "2024-01-01T00:00:00.000Z",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+              example: "2024-01-01T00:00:00.000Z",
+            },
+          },
+          required: ["title", "description", "status"],
+        },
       },
     },
   },

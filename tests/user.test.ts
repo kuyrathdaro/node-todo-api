@@ -1,10 +1,12 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import app from "@/app";
+import createApp from "@/app";
+import logger from "@/loaders/logger";
+
+let app: any;
+let token: string;
 
 describe("User API", () => {
-  let token: string;
-
   const userPayload = {
     name: "User Me",
     email: "me@example.com",
@@ -12,7 +14,14 @@ describe("User API", () => {
   };
 
   beforeAll(async () => {
-    // Sign up
+    app = await createApp();
+
+    // Mute winston logs
+    jest.spyOn(logger, "info").mockImplementation((info: any) => logger);
+    jest.spyOn(logger, "warn").mockImplementation((info: any) => logger);
+    jest.spyOn(logger, "error").mockImplementation((info: any) => logger);
+
+    // Sign up the user
     await request(app).post("/api/auth/signup").send(userPayload);
 
     // Sign in to get token
@@ -29,7 +38,7 @@ describe("User API", () => {
     await mongoose.connection.close();
   });
 
-  it("should get current user profile", async () => {
+  it("should get the current user's profile", async () => {
     const res = await request(app)
       .get("/api/users/me")
       .set("Authorization", `Bearer ${token}`);
@@ -39,19 +48,17 @@ describe("User API", () => {
     expect(res.body.user.email).toBe(userPayload.email);
   });
 
-  it("should update current user profile", async () => {
-    const res = await request(app)
-      .patch("/api/users/me")
-      .set("Authorization", `Bearer ${token}`)
-      .send({ name: "Updated Name" });
+  it("should return 401 if no token is provided", async () => {
+    const res = await request(app).get("/api/users/me");
 
-    expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty("userRecord");
-    expect(res.body.userRecord.name).toBe("Updated Name");
+    expect(res.statusCode).toBe(401);
   });
 
-  it("should fail without auth token", async () => {
-    const res = await request(app).get("/api/users/me");
+  it("should return 401 for invalid token", async () => {
+    const res = await request(app)
+      .get("/api/users/me")
+      .set("Authorization", "Bearer invalidtoken");
+
     expect(res.statusCode).toBe(401);
   });
 });

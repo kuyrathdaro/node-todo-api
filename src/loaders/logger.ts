@@ -5,31 +5,26 @@ dotenv.config();
 
 const transports = [];
 
-if (process.env.NODE_ENV !== "developement") {
-  transports.push(new winston.transports.Console());
+if (process.env.NODE_ENV === "test") {
+  // No transports in test to prevent any logging
 } else {
   transports.push(
     new winston.transports.Console({
       format: winston.format.combine(
-        winston.format.cli(),
-        winston.format.splat()
+        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        winston.format.colorize(),
+        winston.format.printf(({ level, message, timestamp }) => {
+          return `[${timestamp}] ${level}: ${message}`;
+        })
       ),
     })
   );
 }
 
 const loggerInstance = winston.createLogger({
-  level: config.logs.level,
+  level: config.logs?.level || "info",
   levels: winston.config.npm.levels,
-  format: winston.format.combine(
-    winston.format.timestamp({
-      format: "YYYY-MM-DD HH:mm:ss",
-    }),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
-  ),
-  transports
+  transports,
 });
 
 export default loggerInstance;

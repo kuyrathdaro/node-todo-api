@@ -1,16 +1,23 @@
+import "reflect-metadata";
+import express from "express";
 import config from "./config";
 import logger from "./loaders/logger";
-import createApp from "./app";
+import loaders from "./loaders";
 
-(async () => {
-  const app = await createApp();
+async function startServer() {
+  const app = express();
 
-  app
-    .listen(config.port, () => {
-      logger.info(`Server listening on port ${config.port}`);
-    })
-    .on("error", (err) => {
-      logger.error(err);
-      process.exit(1);
-    });
-})();
+  // Load middlewares, routes, DI, DB, etc.
+  await loaders({ expressApp: app });
+
+  const server = app.listen(config.port, () => {
+    logger.info(`✅ Server listening on port ${config.port}`);
+  });
+
+  server.on("error", (err) => {
+    logger.error("❌ Server error:", err);
+    process.exit(1);
+  });
+}
+
+startServer();
