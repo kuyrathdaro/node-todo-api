@@ -3,6 +3,7 @@ import dependencyInjectorLoader from "./dependencyInjector";
 import mongooseLoader from "./mongoose";
 import jobsLoader from "./jobs";
 import Logger from "./logger";
+import swaggerLoader from "./swagger";
 
 export default async ({ expressApp }) => {
   const mongoConnection = await mongooseLoader();
@@ -29,4 +30,7 @@ export default async ({ expressApp }) => {
 
   await expressLoader({ app: expressApp });
   Logger.info("✌️ Express loaded");
+
+  await swaggerLoader({ app: expressApp });
+  Logger.info("📚 Swagger loaded at /api-docs");
 };

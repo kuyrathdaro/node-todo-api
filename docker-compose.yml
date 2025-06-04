@@ -1,7 +1,7 @@
-version: "3.8"
 services:
   api:
     build: .
+    container_name: api
     ports:
       - 3000:3000
     volumes:
@@ -12,22 +12,26 @@ services:
       - mongo
     networks:
       - nodetodo-net
+
   mongo:
     container_name: mongo
     image: mongo
-    volumes:
-      - mongodata:/data/db
     ports:
       - 27017:27017
+    env_file:
+      - .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME:
-      MONGO_INITDB_ROOT_PASSWORD:
-      MONGO_INITDB_DATABASE: node-todo
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    volumes:
+      - mongodata:/data/db
     networks:
       - nodetodo-net
 
 volumes:
   mongodata:
-    driver: local
+
 networks:
   nodetodo-net:
+    driver: bridge

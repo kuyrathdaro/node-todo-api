@@ -2,11 +2,12 @@ import { Service, Inject } from "typedi";
 import { IUser, IUserInputDTO } from "@/interfaces/IUser";
 import bcryptjs from "bcryptjs";
 import { Logger } from "winston";
+import { UserModel } from "@/models/user";
 
 @Service()
 export default class UserService {
   constructor(
-    @Inject("userModel") private userModel: Models.UserModel,
+    @Inject("userModel") private userModel: UserModel,
     @Inject("logger") private logger: Logger
   ) {}
 

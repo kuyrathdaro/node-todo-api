@@ -1,12 +1,14 @@
 import { Service, Inject } from "typedi";
 import { ITodoInputDTO } from "@/interfaces/ITodo";
 import { Logger } from "winston";
+import { UserModel } from "@/models/user";
+import { TodoModel } from "@/models/todo";
 
 @Service()
 export default class TodoService {
   constructor(
-    @Inject("todoModel") private todoModel: Models.TodoModel,
-    @Inject("userModel") private userModel: Models.UserModel,
+    @Inject("todoModel") private todoModel: TodoModel,
+    @Inject("userModel") private userModel: UserModel,
     @Inject("logger") private logger: Logger
   ) {}
 
@@ -16,7 +18,7 @@ export default class TodoService {
   ): Promise<any> {
     try {
       this.logger.silly("Creating a todo list");
-      const todoRecord: any = await this.todoModel.create({ ...todoInputDTO });
+      const todoRecord: any = await this.todoModel.create({ ...todoInputDTO, user: userId });
       if (!todoRecord) {
         throw new Error("Error creating a todo");
       }
@@ -55,7 +57,7 @@ export default class TodoService {
       const userRecord: any = await this.userModel.findOne({ _id: userId });
       if (userRecord.todos.includes(todoId)) {
         const todoRecord = await this.todoModel.findOne({ _id: todoId });
-        return todoRecord.toObject();
+        return todoRecord;
       }
     } catch (err) {
       this.logger.error(err);
@@ -72,7 +74,7 @@ export default class TodoService {
       this.logger.silly("Updating a todo list");
       const userRecord: any = await this.userModel.findOne({ _id: userId });
       if (userRecord.todos.includes(todoId)) {
-        const updatedTodo = await this.todoModel.updateOne(
+        const updatedTodo = await this.todoModel.findOneAndUpdate(
           { _id: todoId },
           { $set: { ...todoInputDTO } },
           { new: true }
@@ -93,9 +95,13 @@ export default class TodoService {
     try {
       let userRecord: any = await this.userModel.findOne({ _id: userId });
       if (userRecord.todos.includes(todoId)) {
-        const deletedTodo = await this.todoModel.findOneAndDelete({ _id: todoId});
+        const deletedTodo = await this.todoModel.deleteOne({ _id: todoId });
         this.userModel.updateOne({ "todos": todoId }, { $pull: { "todos": todoId}});
-        return deletedTodo;
+        if (deletedTodo.deletedCount === 0) {
+          throw new Error("Error deleting todo");
+        } else {
+          return { success: true, message: "Todo deleted successfully" };
+        }
       }
     } catch (err) {
       this.logger.error(err);
