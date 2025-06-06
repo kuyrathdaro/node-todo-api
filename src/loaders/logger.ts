@@ -1,11 +1,9 @@
 import winston from "winston";
 import config from "@/config";
-import dotenv from "dotenv";
-dotenv.config();
 
 const transports = [];
 
-if (process.env.NODE_ENV === "test") {
+if (config.env === "test") {
   // No transports in test to prevent any logging
 } else {
   transports.push(

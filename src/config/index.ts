@@ -9,6 +9,7 @@ if (envFound.error) {
 }
 
 export default {
+    env: process.env.NODE_ENV,
     port: process.env.PORT || 3000,
     databaseURL: process.env.MONGO_DB_URI,
     jwtSecret: process.env.JWT_SECRET,
@@ -26,6 +27,9 @@ export default {
     agendash: {
         user: process.env.AGENDASH_USER,
         password: process.env.AGENDASH_PASS
+    },
+    sentry: {
+        dsn: process.env.SENTRY_DSN
     },
     swagger: {
         user: process.env.SWAGGER_USER,
