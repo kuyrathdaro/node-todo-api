@@ -4,6 +4,7 @@ import mongooseLoader from "./mongoose";
 import jobsLoader from "./jobs";
 import Logger from "./logger";
 import swaggerLoader from "./swagger";
+import sentryLoader from "./sentry";
 
 export default async ({ expressApp }) => {
   const mongoConnection = await mongooseLoader();
@@ -27,6 +28,9 @@ export default async ({ expressApp }) => {
 
   await jobsLoader({ agenda });
   Logger.info("✌️ Jobs loaded");
+
+  await sentryLoader({ app: expressApp });
+  Logger.info("🛡️ Sentry loaded")
 
   await expressLoader({ app: expressApp });
   Logger.info("✌️ Express loaded");

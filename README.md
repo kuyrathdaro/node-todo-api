@@ -2,13 +2,14 @@
 
 A simple and secure REST API for managing notes and todos. Built with Express, MongoDB, TypeDI, Celebrate for validation, and JWT-based authentication.
 
-## 🚀 Features
+## ✨ Features
 
-- User signup/signin with JWT authentication
-- CRUD operations for todos
-- Middleware-based authentication and request validation
-- Swagger API documentation
-- Unit & integration tests with Jest and Supertest
+- 🚀 Express server with modular loader architecture
+- 📦 Dependency Injection via custom loader
+- 🗃 MongoDB (via Mongoose)
+- 📅 Agenda job scheduler
+- 📚 Swagger docs at `/api-docs`
+- 🛡️ Sentry monitoring and tracing
 
 ## 🏗️ Project Structure
 
@@ -16,12 +17,13 @@ Follows a clean and maintainable **Bulletproof Node.js architecture**. See [Bull
 
 ## 🧰 Tech Stack
 
-- **Node.js + Express**
-- **MongoDB + Mongoose**
-- **TypeDI** – for dependency injection
-- **Celebrate + Joi** – for route validation
-- **Swagger** – for API documentation
-- **Jest + Supertest** – for testing
+- **Node.js + Express** – Web server
+- **MongoDB + Mongoose** – Database and ODM
+- **TypeDI** – For dependency injection
+- **Celebrate + Joi** – For route validation
+- **Swagger** – For API documentation (`/api-docs`)
+- **Sentry** – For error monitoring and performance tracing
+- **Jest + Supertest** – For unit and integration testing
 
 ---
 
